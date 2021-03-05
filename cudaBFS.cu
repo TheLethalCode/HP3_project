@@ -5,12 +5,12 @@
 
 #include "graph.h"
 #include "bfsCPU.h"
+#include <iostream>
 
 __global__ void cudaBfs(int N, int level, int *d_adjacencyList, int *d_edgesOffset,
                int *d_edgesSize, int *d_distance, int *d_parent, int *changed) {
     int thid = blockIdx.x * blockDim.x + threadIdx.x;
     int valueChange = 0;
-
     if (thid < N && d_distance[thid] == level) {
         int u = thid;
         for (int i = d_edgesOffset[u]; i < d_edgesOffset[u] + d_edgesSize[u]; i++) {
@@ -22,9 +22,9 @@ __global__ void cudaBfs(int N, int level, int *d_adjacencyList, int *d_edgesOffs
             }
         }
     }
-
+    
     if (valueChange) {
-        *changed = valueChange;
+        *changed = 1;
     }
 }
 
@@ -89,7 +89,7 @@ void initializeCudaBfs(int startVertex, std::vector<int> &distance, std::vector<
     parent[startVertex] = 0;
 
     checkError(cudaMemcpy(d_distance, distance.data(), G.numVertices * sizeof(int), cudaMemcpyHostToDevice),
-               "cannot copy to d)distance");
+               "cannot copy to d_distance");
     checkError(cudaMemcpy(d_parent, parent.data(), G.numVertices * sizeof(int), cudaMemcpyHostToDevice),
                "cannot copy to d_parent");
 }
@@ -102,25 +102,40 @@ void finalizeCudaBfs(std::vector<int> &distance, std::vector<int> &parent, Graph
 
 }
 
+void print_array(int *arr, int N){
+    std::cout << "arr :: \n";
+    for (int i = 0 ; i < N; i++) std::cout << arr[i] << " ";
+    std::cout << "\n";
+}
+
 void runCudaSimpleBfs(int startVertex, Graph &G, std::vector<int> &distance,
                       std::vector<int> &parent) {
     initializeCudaBfs(startVertex, distance, parent, G);
 
     int *changed;
     checkError(cudaMalloc((void **) &changed, sizeof(int)), "cannot allocate changed");
-
+    int zero = 0;
+    int *h_changed = &zero;
+    checkError(cudaMemcpy(changed, h_changed, sizeof(int), cudaMemcpyHostToDevice),
+               "cannot copy to changed");
     //launch kernel
     printf("Starting simple parallel bfs.\n");
     auto start = std::chrono::steady_clock::now();
-
-    *changed = 1;
+    
+    *h_changed = 1;
     int level = 0;
-    while (*changed) {
-        *changed = 0;
-        int threadsPerBlock = 1024;
-        int blocksPerGrid = (G.numVertices)/ threadsPerBlock + 1;
+    while (*h_changed) {
+        *h_changed = 0;
+        checkError(cudaMemcpy(changed, h_changed, sizeof(int), cudaMemcpyHostToDevice),
+            "cannot copy to changed");
+        int threadsPerBlock = (G.numVertices < 1024) ? G.numVertices : 1024;
+        int blocksPerGrid = (G.numVertices + threadsPerBlock -1 )/ threadsPerBlock;
+        // std::cout << threadsPerBlock << " # " << blocksPerGrid << "\n";
         cudaBfs<<<blocksPerGrid, threadsPerBlock>>>(G.numVertices, level, d_adjacencyList, d_edgesOffset, d_edgesSize, d_distance, d_parent, changed);
+        // cudaDeviceSynchronize();
         cudaDeviceSynchronize();
+        cudaMemcpy(h_changed, changed, sizeof(int), cudaMemcpyDeviceToHost);
+
         level++;
     }
 
@@ -128,6 +143,12 @@ void runCudaSimpleBfs(int startVertex, Graph &G, std::vector<int> &distance,
     auto end = std::chrono::steady_clock::now();
     long duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
     printf("Elapsed time in milliseconds : %li ms.\n", duration);
+    
+    // int DSIZE = G.numVertices*sizeof(int);
+    // int *h_data = (int *)malloc(DSIZE);
+    // cudaMemcpy(h_data, d_distance, DSIZE, cudaMemcpyDeviceToHost);
+
+    // print_array(h_data, G.numVertices);
 
     finalizeCudaBfs(distance, parent, G);
 }
