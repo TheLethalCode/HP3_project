@@ -16,9 +16,7 @@ __global__ void SSSP_kernel1(int *V, int *E, int *W, bool *M, int *C, int *U, in
         int pos = V[tid], size = E[pos];
         for (int i = pos + 1; i < pos + size + 1; i++) {
             int nid = E[i];
-            if (U[nid] > C[tid] + W[i]) {
-                U[nid] = C[tid] + W[i];
-            }
+            atomicMin(&U[nid], C[tid] + W[i]);
         }
     }
 }
@@ -123,8 +121,8 @@ int main(int argc, char* argv[]) {
     auto beg = std::chrono::high_resolution_clock::now();
     djikstra(G, s, dis);
     auto end = std::chrono::high_resolution_clock::now();
-    float timeCPU = std::chrono::duration_cast<std::chrono::milliseconds>(end - beg).count();
-    std::cout << "CPU Elapsed Time (in ms): " << timeCPU << std::endl;
+    float timeCPU = std::chrono::duration_cast<std::chrono::microseconds>(end - beg).count();
+    std::cout << "CPU Elapsed Time (in ms): " << timeCPU / 1000 << std::endl;
 
     // ======================= Verification ==========================//
     for (int i = 0; i < Vs; i++) {
