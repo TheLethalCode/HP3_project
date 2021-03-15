@@ -1,7 +1,7 @@
-#include "core.h"
-#include "graph.h"
-#include "SSSPutils.h"
-#include "shortestPathCPU.h"
+#include "../include/core.h"
+#include "../include/graph.h"
+#include "../include/SSSPutils.h"
+#include "../include/shortestPathCPU.h"
 #include <iostream>
 #include <chrono>
 #include <vector>
