@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 
 bool cudaCheck(cudaError_t err) {
     if (err != cudaSuccess) {
@@ -31,4 +32,12 @@ void DeviceProp() {
         cudaGetDeviceProperties(&devP, i);
         printProp(devP);
     }
+}
+
+int vecToArr(std::vector< int > &v, int **A) {
+    *A = new int[v.size()];
+    for (int i = 0; i < v.size(); i++) {
+        (*A)[i] = v[i];
+    }
+    return v.size();
 }

@@ -3,6 +3,6 @@
 #include "graph.h"
 
 void djikstra(Graph&, int, int*);
-void floydWarshall(Graph&, int**);
+void floydWarshall(int, int**);
 
 #endif

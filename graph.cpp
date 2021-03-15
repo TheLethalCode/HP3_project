@@ -3,8 +3,25 @@
 #include <algorithm>
 #include <random>
 
-void Graph::genGraph(int _n, int _m, int lim, int seed) {
-    n = _n, m = _m;
+// Take Input or Generate Graph
+Graph::Graph(int argc, char* argv[]) {
+    if (argc == 1 || atoi(argv[1]) != 1) {
+        std::cin >> n >> m;
+        readGraph();
+    } else if (argc >= 4) {
+        n = atoi(argv[2]), m = atoi(argv[3]);
+        int lim = (argc >= 5? atoi(argv[4]): 20);
+        int seed = (argc >= 6? atoi(argv[5]): 81);
+        genGraph(lim, seed);
+    } else {
+        std::cerr << "Incorrect arguments " << std::endl;
+        exit(EXIT_FAILURE);
+    }
+    normGraph();
+    convGraph();
+}
+
+void Graph::genGraph(int lim, int seed) {
     E.resize(n + 1);
     std::mt19937 rng(seed);
     for (int i = 1, a, b, c; i <= m; i++) {
@@ -14,20 +31,15 @@ void Graph::genGraph(int _n, int _m, int lim, int seed) {
         E[a].emplace_back(b, c);
         E[b].emplace_back(a, c);
     }
-    normGraph();
-    convGraph();
 }
 
-void Graph::readGraph(int _n, int _m) {
-    n = _n, m = _m;
+void Graph::readGraph() {
     E.resize(n + 1);
     for (int i = 1, a, b, c; i <= m; i++) {
         std::cin >> a >> b >> c;
         E[a].emplace_back(b, c);
         E[b].emplace_back(a, c);
     }
-    normGraph();
-    convGraph();
 }
 
 void Graph::normGraph() {
@@ -55,12 +67,4 @@ void Graph::convGraph() {
             packW.emplace_back(it.second);
         }
     }
-}
-
-int vecToArr(std::vector< int > &v, int **A) {
-    *A = new int[v.size()];
-    for (int i = 0; i < v.size(); i++) {
-        (*A)[i] = v[i];
-    }
-    return v.size();
 }
