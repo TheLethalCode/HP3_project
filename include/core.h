@@ -18,6 +18,13 @@ void allocCopy(T **devV, T *V, int n, std::string s) {
     }
 }
 
+template<typename T>
+void alloc(T **devV, int n, std::string s) {
+    if (cudaCheck(cudaMalloc((void **)devV, sizeof(T)*n))) {
+        std::cout << "Allocated memory to " << s << " in device" << std::endl;
+    }
+}
+
 cudaEvent_t start, stop;
 
 #endif

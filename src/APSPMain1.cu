@@ -1,7 +1,7 @@
-#include "core.h"
-#include "graph.h"
-#include "APSPutils.h"
-#include "shortestPathCPU.h"
+#include "../include/core.h"
+#include "../include/graph.h"
+#include "../include/APSPutils.h"
+#include "../include/shortestPathCPU.h"
 #include <iostream>
 #include <chrono>
 #include <vector>
@@ -67,7 +67,7 @@ int main(int argc, char* argv[]) {
     for (int i = 0; i <= G.n; i++) {
         for (int j = 0; j <= G.n; j++) {
             if (dis[i][j] != adj[i*size + j]) {
-                std::cout << "Not a Match at " << i << std::endl;
+                std::cout << "Not a Match at " << i << << " " << j << std::endl;
                 std::cout << "GPU dist: " << adj[i*size + j] << std::endl;
                 std::cout << "CPU dist: " << dis[i][j] << std::endl;
                 exit(EXIT_FAILURE);
