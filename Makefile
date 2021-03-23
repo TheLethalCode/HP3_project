@@ -15,4 +15,4 @@ BFS: src/core.cu src/graph.cpp src/bfsCPU.cpp src/BFSutils.cu src/BFS.cu
 	${CC} $^ -o $@
 
 clean:
-	rm -f SSSP APSP1 APSP2 
+	rm -f SSSP APSP1 APSP2 BFS
