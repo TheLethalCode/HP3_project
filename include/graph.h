@@ -14,6 +14,7 @@ struct Graph {
     void readGraph();
     void normGraph();
     void convGraph();
+    void printGraph();
 };
 
 #endif
