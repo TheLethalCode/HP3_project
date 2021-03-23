@@ -2,6 +2,10 @@
 High Perfomance Parallel Programming's End Term Project - Shortest Path Algorithms for Graphs on CUDA
 
 ## Executing Commands
+- Parallel simple bfs (BFS)
+  - `make BFS` 
+  - `./BFS` - If graph is inputted
+  - `./BFS 1 <numVertex> <numEdge> <weightLimit> <seed>`('weightLimit' and 'seed' are optional) - If randomly generate graph
 
 - Single Source Shortest Path (SSSP)
   - `make SSSP` 
