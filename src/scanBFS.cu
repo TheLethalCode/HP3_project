@@ -9,8 +9,8 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 
-#define NUM_THREADS 1024
-
+#define NUM_THREADS 16
+using namespace std;
 int main(int argc, char* argv[]) {
 
     int s;
@@ -26,13 +26,14 @@ int main(int argc, char* argv[]) {
     // Declare and Initialise Host Array
     int N, level, queueSize, nextQueueSize, Es;
     int *V, *E, *D, *P, *incrDegrees;
+    
     N = vecToArr(G.posV, &V);
     Es = vecToArr(G.packE, &E);
     D = new int[N];
     P = new int[N];
     incrDegrees = new int[N];
     std::fill_n(D, N, INF);
-    std::fill_n(P, N, -1);
+    std::fill_n(P, N, INF);
     std::fill_n(incrDegrees, N, 0);
     D[s] = level = nextQueueSize = 0; // Update source values
     queueSize = 1;
@@ -49,16 +50,20 @@ int main(int argc, char* argv[]) {
     alloc<int>(&devDegrees, N, "devDegrees");
     allocCopy<int>(&devIncrDegrees, incrDegrees, N, "devIncrDegrees");
     
+    int firstElemQueue = s;
+    cudaMemcpy(devCurrentQueue, &firstElemQueue, sizeof(int), cudaMemcpyHostToDevice);
+
     // Run Cuda Parallel
     cudaEventRecord(start);
-    while (queueSize) {
+    while (queueSize && level <= 2) {
         int blocks = queueSize/NUM_THREADS + 1;
-
+        std::cout << "level " << level << "\n"; 
         nextLayer<<< blocks, NUM_THREADS >>>(level, devV, devE, devP, devD, queueSize, devCurrentQueue);
-
+        cudaDeviceSynchronize();
         countDegrees<<< blocks, NUM_THREADS >>>(devV, devE, devP, queueSize, devCurrentQueue, devDegrees);
-
+        cudaDeviceSynchronize();
         scanDegrees<<< blocks, NUM_THREADS >>>(N, devDegrees, devIncrDegrees);
+        cudaDeviceSynchronize();
         cudaMemcpy(incrDegrees, devIncrDegrees, sizeof(int)*N, cudaMemcpyDeviceToHost);
 
         //count prefix sums on CPU for ends of blocks exclusive already written previous block sum
@@ -67,11 +72,11 @@ int main(int argc, char* argv[]) {
             incrDegrees[i / NUM_THREADS] += incrDegrees[i / NUM_THREADS - 1];
         }
         nextQueueSize = incrDegrees[(queueSize - 1) / NUM_THREADS + 1];
-
+        
         cudaMemcpy(devIncrDegrees, incrDegrees, sizeof(int)*N, cudaMemcpyHostToDevice);
         assignVerticesNextQueue<<< blocks, NUM_THREADS >>>(devV, devE, devP, queueSize, devCurrentQueue, devNextQueue,
             devDegrees, devIncrDegrees, nextQueueSize);
-        
+        cudaDeviceSynchronize();
         level += 1;
         queueSize = nextQueueSize;
         std::swap(devCurrentQueue, devNextQueue);
@@ -107,7 +112,7 @@ int main(int argc, char* argv[]) {
             std::cout << "Not a Match at " << i << std::endl;
             std::cout << "GPU dist: " << D[i] << std::endl;
             std::cout << "CPU dist: " << dis[i] << std::endl;
-            exit(EXIT_FAILURE);
+            // exit(EXIT_FAILURE);
         }
     }
 }

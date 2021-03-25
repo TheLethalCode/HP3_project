@@ -1,6 +1,7 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
-
+#include <iostream>
+#define NUM_THREADS 16
 // ========================= Parallel BFS ============================= //
 
 __global__ void BFS_kernel(int N, int level, int *devV, int *devE, int *devD, int *devP, int *devFlag) {
@@ -24,30 +25,31 @@ __global__ void BFS_kernel(int N, int level, int *devV, int *devE, int *devD, in
 
 // ========================= Scan BFS ============================= //
 
-__global__ void nextLayer(int level, int *devV, int *devE, int *devD, int *devP, int queueSize, int *devCurrentQueue) {
+__global__ void nextLayer(int level, int *devV, int *devE, int *devP, int *devD, int queueSize, int *devCurrentQueue) {
     int thid = blockIdx.x * blockDim.x + threadIdx.x;
-
     if (thid < queueSize) {
         int u = devCurrentQueue[thid];
         for (int i = 1; i <= devE[devV[u]]; i++) {
-            int v = devE[devV[u]+1];
+            int pos = devV[u]+i;
+            int v = devE[pos];
             if (level + 1 < devD[v]) {
                 devD[v] = level + 1;
-                devP[v] = i;
+                devP[v] = pos;
             }
         }
     }
+
 }
 
 __global__ void countDegrees(int *devV, int *devE, int *devP, int queueSize, int *devCurrentQueue, int *devDegrees) {
     int thid = blockIdx.x * blockDim.x + threadIdx.x;
-
     if (thid < queueSize) {
         int u = devCurrentQueue[thid];
         int degree = 0;
         for (int i = 1; i <= devE[devV[u]]; i++) {
-            int v = devE[devV[u]+1];
-            if (devP[v] == i && v != u) {
+            int pos = devV[u]+i;
+            int v = devE[pos];
+            if (devP[v] == (pos) && v != u) {
                 ++degree;
             }
         }
@@ -58,8 +60,8 @@ __global__ void countDegrees(int *devV, int *devE, int *devP, int queueSize, int
 __global__ void scanDegrees(int N, int *devDegrees, int *incrDegrees) {
     //TODO: copied this part, need to understand
     int thid = blockIdx.x * blockDim.x + threadIdx.x; 
-
-    if (thid < N) {
+    // printf("scanDegrees thid %d\n", thid);
+    if (thid < NUM_THREADS) {
         //write initial values to shared memory
         __shared__ int prefixSum[1024];
         int modulo = threadIdx.x;
@@ -106,7 +108,7 @@ __global__ void assignVerticesNextQueue(int *devV, int *devE, int *devP, int que
                              int nextQueueSize) {
     //TODO: copied this part, need to understand
     int thid = blockIdx.x * blockDim.x + threadIdx.x;
-
+    // printf("assignVerticesNextQ thid %d\n", thid);
     if (thid < queueSize) {
         __shared__ int sharedIncrement;
         if (!threadIdx.x) {
@@ -122,9 +124,10 @@ __global__ void assignVerticesNextQueue(int *devV, int *devE, int *devP, int que
         int u = devCurrentQueue[thid];
         int counter = 0;
         for (int i = 1; i <= devE[devV[u]]; i++) {
-            int v = devE[devV[u]+1];
-            if (devP[v] == i && v != u) {
+            int v = devE[devV[u]+i];
+            if (devP[v] == devV[u]+i && v != u) {
                 int nextQueuePlace = sharedIncrement + sum + counter;
+                // printf("nextQplace %d u %d v %d counter %d\n", nextQueuePlace, u, v, counter);
                 devNextQueue[nextQueuePlace] = v;
                 counter++;
             }

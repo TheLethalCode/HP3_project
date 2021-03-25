@@ -48,6 +48,7 @@ int main(int argc, char* argv[]) {
         flag = 0;
         cudaMemcpy(devFlag, &flag, sizeof(int), cudaMemcpyHostToDevice);
         BFS_kernel<<< blocks, NUM_THREADS >>>(N, level, devV, devE, devD, devP, devFlag);
+        cudaDeviceSynchronize();
         level += 1;
         cudaMemcpy(&flag, devFlag, sizeof(int), cudaMemcpyDeviceToHost);
     }
