@@ -25,6 +25,6 @@ void alloc(T **devV, int n, std::string s) {
     }
 }
 
-cudaEvent_t start, stop;
+// cudaEvent_t start, stop;
 
 #endif

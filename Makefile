@@ -8,6 +8,9 @@ SSSP: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/SSSPutils.cu src/SSS
 APSP1: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/APSPutils.cu src/APSPMain1.cu
 	${CC} $^ -o $@
 
+BFW: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/BFWkernels.cu src/BFWMain.cu
+	${CC} $^ -o $@
+
 APSP2: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/SSSPutils.cu src/APSPMain1.cu
 	${CC} $^ -o $@
 
