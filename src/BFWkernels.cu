@@ -3,6 +3,7 @@
 #include "../include/BFWkernels.h"
 #include "../include/core.h"
 #include "../include/graph.h"
+#include <iostream>
 
 #define HANDLE_ERROR(error) { \
     if (error != cudaSuccess) { \
@@ -312,15 +313,15 @@ void cudaBlockedFW(int nvertex, int *graph)
     for(int blockID = 0; blockID < numBlock; ++blockID) {
         // Start dependent phase
         _blocked_fw_dependent_ph<<<gridPhase1, dimBlockSize>>>(blockID, pitch / sizeof(int), nvertex, graphDevice);
-        HANDLE_ERROR(cudaGetLastError());
+        HANDLE_ERROR(cudaPeekAtLastError());
 
         // Start partially dependent phase
         _blocked_fw_partial_dependent_ph<<<gridPhase2, dimBlockSize>>>(blockID, pitch / sizeof(int), nvertex, graphDevice);
-        HANDLE_ERROR(cudaGetLastError());
+        HANDLE_ERROR(cudaPeekAtLastError());
 
         // Start independent phase
         _blocked_fw_independent_ph<<<gridPhase3, dimBlockSize>>>(blockID, pitch / sizeof(int), nvertex, graphDevice);
-        HANDLE_ERROR(cudaGetLastError());
+        HANDLE_ERROR(cudaPeekAtLastError());
     }
 
     // Check for any errors launching the kernel
