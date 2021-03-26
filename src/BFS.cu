@@ -7,7 +7,7 @@
 #include <vector>
 #include <utility>
 
-#define NUM_THREADS 256
+#define NUM_THREADS 1024
 
 int main(int argc, char* argv[]) {
 

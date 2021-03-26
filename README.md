@@ -12,6 +12,11 @@ High Perfomance Parallel Programming's End Term Project - Shortest Path Algorith
   - `./queueBFS` - If graph is inputted
   - `./queueBFS 1 <numVertex> <numEdge> <weightLimit> <seed>`('weightLimit' and 'seed' are optional) - If randomly generate graph
 
+- Parallel linear bfs using prefixScan and  out-of-core frontiers (queueBFS)
+  - `make scanBFS` 
+  - `./scanBFS` - If graph is inputted
+  - `./scanBFS 1 <numVertex> <numEdge> <weightLimit> <seed>`('weightLimit' and 'seed' are optional) - If randomly generate graph
+
 - Single Source Shortest Path (SSSP)
   - `make SSSP` 
   - `./SSSP` - If graph is inputted

@@ -9,13 +9,12 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 
-#define NUM_THREADS 16
+#define NUM_THREADS 1024
 using namespace std;
 int main(int argc, char* argv[]) {
 
     int s;
     Graph G(argc, argv);
-    G.printGraph();
     std::cout << "Source Vertex: ";
     std::cin >> s;
     // ========================= CUDA ============================= //
@@ -37,7 +36,7 @@ int main(int argc, char* argv[]) {
     std::fill_n(incrDegrees, N, 0);
     D[s] = level = nextQueueSize = 0; // Update source values
     queueSize = 1;
-    int *just_a_num;
+
     // Declare and Initialise Device Array
     int *devV, *devE, *devD, *devP;
     int *devCurrentQueue, *devNextQueue, *devDegrees, *devIncrDegrees;
@@ -49,20 +48,19 @@ int main(int argc, char* argv[]) {
     alloc<int>(&devNextQueue, N, "devNextQueue");
     alloc<int>(&devDegrees, N, "devDegrees");
     allocCopy<int>(&devIncrDegrees, incrDegrees, N, "devIncrDegrees");
-    alloc<int>(&just_a_num, 1, "just_a_num");
+
     int firstElemQueue = s;
     cudaMemcpy(devCurrentQueue, &firstElemQueue, sizeof(int), cudaMemcpyHostToDevice);
 
     // Run Cuda Parallel
     cudaEventRecord(start);
-    while (queueSize && level <= 2) {
+    while (queueSize) {
         int blocks = queueSize/NUM_THREADS + 1;
-        std::cout << "level " << level << "\n"; 
         nextLayer<<< blocks, NUM_THREADS >>>(level, devV, devE, devP, devD, queueSize, devCurrentQueue);
         cudaDeviceSynchronize();
         countDegrees<<< blocks, NUM_THREADS >>>(devV, devE, devP, queueSize, devCurrentQueue, devDegrees);
         cudaDeviceSynchronize();
-        scanDegrees<<< blocks, NUM_THREADS >>>(N, devDegrees, devIncrDegrees, just_a_num);
+        scanDegrees<<< blocks, NUM_THREADS >>>(queueSize, devDegrees, devIncrDegrees);
         cudaDeviceSynchronize();
         cudaMemcpy(incrDegrees, devIncrDegrees, sizeof(int)*N, cudaMemcpyDeviceToHost);
 
@@ -92,6 +90,15 @@ int main(int argc, char* argv[]) {
     float timeGPU = 0;
     cudaEventElapsedTime(&timeGPU, start, stop);
     std::cout << "CUDA Elapsed Time (in ms): " << timeGPU << std::endl;
+
+    clear<int>(devV, "devV");
+    clear<int>(devE, "devE");
+    clear<int>(devD, "devD");
+    clear<int>(devP, "devP");
+    clear<int>(devCurrentQueue, "devCurrentQueue");
+    clear<int>(devNextQueue, "devNextQueue");
+    clear<int>(devDegrees, "devDegrees");
+    clear<int>(devIncrDegrees, "devIncrDegrees");
 
     // ========================= CPU ============================= //
     int *dis = new int[N];

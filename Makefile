@@ -21,4 +21,4 @@ queueBFS: src/core.cu src/graph.cpp src/bfsCPU.cpp src/BFSutils.cu src/queueBFS.
 	${CC} $^ -o $@
 
 clean:
-	rm -f SSSP APSP1 APSP2 BFS scanBFS
+	rm -f SSSP APSP1 APSP2 BFS scanBFS queueBFS

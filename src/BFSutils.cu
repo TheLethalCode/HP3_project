@@ -77,15 +77,11 @@ __global__ void countDegrees(int *devV, int *devE, int *devP, int queueSize, int
     }
 }
 
-__global__ void scanDegrees(int N, int *devDegrees, int *incrDegrees, int *num) {
+__global__ void scanDegrees(int N, int *devDegrees, int *incrDegrees) {
     //TODO: copied this part, need to understand
     int thid = blockIdx.x * blockDim.x + threadIdx.x; 
-    printf("scanDegrees thid %d\n", thid);
-    printf("scanDegrees thid %d\n", thid);
-    // unsigned int fakeN = N;
-    int val = atomicAdd(num, 1);
-    printf("\n [ fakeN %d val %d ] \n", *num, val);
-    if (thid < NUM_THREADS) {
+    
+    if (thid < N) {
         //write initial values to shared memory
         __shared__ int prefixSum[1024];
         int modulo = threadIdx.x;
@@ -151,7 +147,6 @@ __global__ void assignVerticesNextQueue(int *devV, int *devE, int *devP, int que
             int v = devE[devV[u]+i];
             if (devP[v] == devV[u]+i && v != u) {
                 int nextQueuePlace = sharedIncrement + sum + counter;
-                // printf("nextQplace %d u %d v %d counter %d\n", nextQueuePlace, u, v, counter);
                 devNextQueue[nextQueuePlace] = v;
                 counter++;
             }
