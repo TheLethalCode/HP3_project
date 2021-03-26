@@ -7,7 +7,7 @@ High Perfomance Parallel Programming's End Term Project - Shortest Path Algorith
   - `./BFS` - If graph is inputted
   - `./BFS 1 <numVertex> <numEdge> <weightLimit> <seed>`('weightLimit' and 'seed' are optional) - If randomly generate graph
 
-  - Parallel linear bfs using Queue (slow, due to atomic operations) (queueBFS)
+- Parallel linear bfs using Queue (slow, due to atomic operations) (queueBFS)
   - `make queueBFS` 
   - `./queueBFS` - If graph is inputted
   - `./queueBFS 1 <numVertex> <numEdge> <weightLimit> <seed>`('weightLimit' and 'seed' are optional) - If randomly generate graph
