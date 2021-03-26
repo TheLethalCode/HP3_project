@@ -17,5 +17,8 @@ BFS: src/core.cu src/graph.cpp src/bfsCPU.cpp src/BFSutils.cu src/BFS.cu
 scanBFS: src/core.cu src/graph.cpp src/bfsCPU.cpp src/BFSutils.cu src/scanBFS.cu
 	${CC} $^ -o $@
 
+queueBFS: src/core.cu src/graph.cpp src/bfsCPU.cpp src/BFSutils.cu src/queueBFS.cu
+	${CC} $^ -o $@
+
 clean:
 	rm -f SSSP APSP1 APSP2 BFS scanBFS

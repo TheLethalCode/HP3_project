@@ -3,7 +3,7 @@
 #include <vector>
 #include <utility>
 
-const int INF = 1000000007;
+const int INF = INT_MAX;
 
 struct Graph {
     int n, m;

@@ -37,7 +37,7 @@ int main(int argc, char* argv[]) {
     std::fill_n(incrDegrees, N, 0);
     D[s] = level = nextQueueSize = 0; // Update source values
     queueSize = 1;
-
+    int *just_a_num;
     // Declare and Initialise Device Array
     int *devV, *devE, *devD, *devP;
     int *devCurrentQueue, *devNextQueue, *devDegrees, *devIncrDegrees;
@@ -49,7 +49,7 @@ int main(int argc, char* argv[]) {
     alloc<int>(&devNextQueue, N, "devNextQueue");
     alloc<int>(&devDegrees, N, "devDegrees");
     allocCopy<int>(&devIncrDegrees, incrDegrees, N, "devIncrDegrees");
-    
+    alloc<int>(&just_a_num, 1, "just_a_num");
     int firstElemQueue = s;
     cudaMemcpy(devCurrentQueue, &firstElemQueue, sizeof(int), cudaMemcpyHostToDevice);
 
@@ -62,7 +62,7 @@ int main(int argc, char* argv[]) {
         cudaDeviceSynchronize();
         countDegrees<<< blocks, NUM_THREADS >>>(devV, devE, devP, queueSize, devCurrentQueue, devDegrees);
         cudaDeviceSynchronize();
-        scanDegrees<<< blocks, NUM_THREADS >>>(N, devDegrees, devIncrDegrees);
+        scanDegrees<<< blocks, NUM_THREADS >>>(N, devDegrees, devIncrDegrees, just_a_num);
         cudaDeviceSynchronize();
         cudaMemcpy(incrDegrees, devIncrDegrees, sizeof(int)*N, cudaMemcpyDeviceToHost);
 

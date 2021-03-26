@@ -25,6 +25,13 @@ void alloc(T **devV, int n, std::string s) {
     }
 }
 
+template<class T>
+void clear(T *V, std::string s){
+    if (cudaCheck(cudaFree(V))) {
+        std::cout << "Device memory from " << s << " freed" << std::endl;
+    }
+}
+
 cudaEvent_t start, stop;
 
 #endif

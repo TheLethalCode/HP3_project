@@ -23,6 +23,26 @@ __global__ void BFS_kernel(int N, int level, int *devV, int *devE, int *devD, in
     }
 }
 
+// ========================= Queue BFS ============================ //
+
+__global__ void queueBfs(int level, int *devV, int *devE, int *devD, int *devP,
+              int queueSize, int *nextQueueSize, int *devCurrentQueue, int *devNextQueue) {
+    int thid = blockIdx.x * blockDim.x + threadIdx.x;
+
+    if (thid < queueSize) {
+        int u = devCurrentQueue[thid];
+        for (int i = 1; i <= devE[devV[u]]; i++) {
+            int v = devE[devV[u]+i];
+            if (devD[v] == INT_MAX && atomicMin(&devD[v], level + 1) == INT_MAX) {
+                devP[v] = devV[u]+i;
+                int position = atomicAdd(nextQueueSize, 1);
+                devNextQueue[position] = v;
+            }
+        }
+    }
+}
+
+
 // ========================= Scan BFS ============================= //
 
 __global__ void nextLayer(int level, int *devV, int *devE, int *devP, int *devD, int queueSize, int *devCurrentQueue) {
@@ -57,10 +77,14 @@ __global__ void countDegrees(int *devV, int *devE, int *devP, int queueSize, int
     }
 }
 
-__global__ void scanDegrees(int N, int *devDegrees, int *incrDegrees) {
+__global__ void scanDegrees(int N, int *devDegrees, int *incrDegrees, int *num) {
     //TODO: copied this part, need to understand
     int thid = blockIdx.x * blockDim.x + threadIdx.x; 
-    // printf("scanDegrees thid %d\n", thid);
+    printf("scanDegrees thid %d\n", thid);
+    printf("scanDegrees thid %d\n", thid);
+    // unsigned int fakeN = N;
+    int val = atomicAdd(num, 1);
+    printf("\n [ fakeN %d val %d ] \n", *num, val);
     if (thid < NUM_THREADS) {
         //write initial values to shared memory
         __shared__ int prefixSum[1024];

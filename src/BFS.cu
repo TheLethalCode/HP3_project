@@ -27,8 +27,8 @@ int main(int argc, char* argv[]) {
     Es = vecToArr(G.packE, &E);
     D = new int[N];
     P = new int[N];
-    std::fill_n(D, N, INF);
-    std::fill_n(P, N, -1);
+    std::fill_n(D, N, std::numeric_limits<int>::max());
+    std::fill_n(P, N, std::numeric_limits<int>::max());
     D[s] = level = 0; // Update source values
     flag = 1;
 
@@ -63,6 +63,12 @@ int main(int argc, char* argv[]) {
     float timeGPU = 0;
     cudaEventElapsedTime(&timeGPU, start, stop);
     std::cout << "CUDA Elapsed Time (in ms): " << timeGPU << std::endl;
+
+    clear<int>(devV, "devV");
+    clear<int>(devE, "devE");
+    clear<int>(devD, "devD");
+    clear<int>(devP, "devP");
+    clear<int>(devFlag, "devFlag");
 
     // ========================= CPU ============================= //
     int *dis = new int[N];
