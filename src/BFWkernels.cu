@@ -1,7 +1,6 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 #include "../include/BFWkernels.h"
-#include "../include/core.h"
 #include "../include/graph.h"
 #include <iostream>
 
