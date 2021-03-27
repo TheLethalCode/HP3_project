@@ -9,7 +9,7 @@ APSP1: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/APSPutils.cu src/AP
 	${CC} $^ -o $@
 
 BFW: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/BFWkernels.cu src/BFWMain.cu
-	${CC} -gencode arch=compute_75,code=sm_75 $^ -o $@
+	${CC} $^ -o $@
 
 APSP2: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/SSSPutils.cu src/APSPMain1.cu
 	${CC} $^ -o $@

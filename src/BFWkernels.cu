@@ -6,28 +6,6 @@
 #include <iostream>
 
 
-
-static __global__
-void _naive_fw_kernel(const int u, size_t pitch, const int nvertex, int* const graph)
-{
-    int x = blockDim.x * blockIdx.x + threadIdx.x;
-    int y = blockDim.y * blockIdx.y + threadIdx.y;
-
-    if (y < nvertex && x < nvertex) 
-    {
-        int indexYX = y * pitch + x;
-        int indexUX = u * pitch + x;
-
-        int newPath = graph[y * pitch + u] + graph[indexUX];
-        int oldPath = graph[indexYX];
-        if (oldPath > newPath) 
-        {
-            graph[indexYX] = newPath;
-        }
-    }
-}
-
-
 static __global__
 void _blocked_fw_dependent_ph(const int blockId, size_t pitch, const int nvertex, int* const graph) 
 {
@@ -249,39 +227,6 @@ void _blocked_fw_independent_ph(const int blockId, size_t pitch, const int nvert
    }
 }
 
-
-void cudaNaiveFW(int nvertex, int *graph)
-{
-    // Choose which GPU to run on, change this on a multi-GPU system.
-    cudaCheck(cudaSetDevice(0));
-
-    // Initialize the grid and block dimensions here
-    dim3 dimGrid((nvertex - 1) / BLOCK_SIZE + 1, (nvertex - 1) / BLOCK_SIZE + 1, 1);
-    dim3 dimBlock(BLOCK_SIZE, BLOCK_SIZE, 1);
-
-    int *graphDevice;
-    size_t height = nvertex;
-    size_t width = height*sizeof(int);
-    size_t pitch;
-
-    cudaCheck(cudaMallocPitch(&graphDevice, &pitch, width, height));
-
-    cudaCheck(cudaMemcpy2D(graphDevice, pitch, graph, width, width, height, cudaMemcpyHostToDevice));
-
-    cudaFuncSetCacheConfig(_naive_fw_kernel, cudaFuncCachePreferL1);
-    for(int vertex = 0; vertex < nvertex; ++vertex) {
-        _naive_fw_kernel<<<dimGrid, dimBlock>>>(vertex, pitch / sizeof(int), nvertex, graphDevice);
-    }
-
-    // Check for any errors launching the kernel
-    cudaCheck(cudaGetLastError());
-    cudaCheck(cudaDeviceSynchronize());
-
-    cudaCheck(cudaMemcpy2D(graph, width, graphDevice, pitch, width, height, cudaMemcpyDeviceToHost));
-    cudaCheck(cudaFree(graphDevice));
-
-}
- 
 void cudaBlockedFW(int nvertex, int *graph)
 {
     cudaCheck(cudaSetDevice(0));
