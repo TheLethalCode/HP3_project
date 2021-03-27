@@ -2,16 +2,8 @@
 #include <cuda_runtime.h>
 #include "../include/BFWkernels.h"
 #include "../include/graph.h"
+#include "../include/core.h"
 #include <iostream>
-
-#define HANDLE_ERROR(error) { \
-    if (error != cudaSuccess) { \
-        fprintf(stderr, "not cuda success\n"); \
-        fprintf(stderr, "%s in %s at line %d\n", \
-                cudaGetErrorString(error), __FILE__, __LINE__); \
-        exit(EXIT_FAILURE); \
-    } \
-} \
 
 
 
@@ -261,7 +253,7 @@ void _blocked_fw_independent_ph(const int blockId, size_t pitch, const int nvert
 void cudaNaiveFW(int nvertex, int *graph)
 {
     // Choose which GPU to run on, change this on a multi-GPU system.
-    HANDLE_ERROR(cudaSetDevice(0));
+    cudaCheck(cudaSetDevice(0));
 
     // Initialize the grid and block dimensions here
     dim3 dimGrid((nvertex - 1) / BLOCK_SIZE + 1, (nvertex - 1) / BLOCK_SIZE + 1, 1);
@@ -272,9 +264,9 @@ void cudaNaiveFW(int nvertex, int *graph)
     size_t width = height*sizeof(int);
     size_t pitch;
 
-    HANDLE_ERROR(cudaMallocPitch(&graphDevice, &pitch, width, height));
+    cudaCheck(cudaMallocPitch(&graphDevice, &pitch, width, height));
 
-    HANDLE_ERROR(cudaMemcpy2D(graphDevice, pitch, graph, width, width, height, cudaMemcpyHostToDevice));
+    cudaCheck(cudaMemcpy2D(graphDevice, pitch, graph, width, width, height, cudaMemcpyHostToDevice));
 
     cudaFuncSetCacheConfig(_naive_fw_kernel, cudaFuncCachePreferL1);
     for(int vertex = 0; vertex < nvertex; ++vertex) {
@@ -282,25 +274,25 @@ void cudaNaiveFW(int nvertex, int *graph)
     }
 
     // Check for any errors launching the kernel
-    HANDLE_ERROR(cudaGetLastError());
-    HANDLE_ERROR(cudaDeviceSynchronize());
+    cudaCheck(cudaGetLastError());
+    cudaCheck(cudaDeviceSynchronize());
 
-    HANDLE_ERROR(cudaMemcpy2D(graph, width, graphDevice, pitch, width, height, cudaMemcpyDeviceToHost));
-    HANDLE_ERROR(cudaFree(graphDevice));
+    cudaCheck(cudaMemcpy2D(graph, width, graphDevice, pitch, width, height, cudaMemcpyDeviceToHost));
+    cudaCheck(cudaFree(graphDevice));
 
 }
  
 void cudaBlockedFW(int nvertex, int *graph)
 {
-    HANDLE_ERROR(cudaSetDevice(0));
+    cudaCheck(cudaSetDevice(0));
     int *graphDevice;
     size_t height = nvertex;
     size_t width = height*sizeof(int);
     size_t pitch;
 
-    HANDLE_ERROR(cudaMallocPitch(&graphDevice, &pitch, width, height));
+    cudaCheck(cudaMallocPitch(&graphDevice, &pitch, width, height));
 
-    HANDLE_ERROR(cudaMemcpy2D(graphDevice, pitch, graph, width, width, height, cudaMemcpyHostToDevice));
+    cudaCheck(cudaMemcpy2D(graphDevice, pitch, graph, width, width, height, cudaMemcpyHostToDevice));
 
     dim3 gridPhase1(1 ,1, 1);
     dim3 gridPhase2((nvertex - 1) / BLOCK_SIZE + 1, 2 , 1);
@@ -312,21 +304,21 @@ void cudaBlockedFW(int nvertex, int *graph)
     for(int blockID = 0; blockID < numBlock; ++blockID) {
         // Start dependent phase
         _blocked_fw_dependent_ph<<<gridPhase1, dimBlockSize>>>(blockID, pitch / sizeof(int), nvertex, graphDevice);
-        HANDLE_ERROR(cudaPeekAtLastError());
+        cudaCheck(cudaPeekAtLastError());
 
         // Start partially dependent phase
         _blocked_fw_partial_dependent_ph<<<gridPhase2, dimBlockSize>>>(blockID, pitch / sizeof(int), nvertex, graphDevice);
-        HANDLE_ERROR(cudaPeekAtLastError());
+        cudaCheck(cudaPeekAtLastError());
 
         // Start independent phase
         _blocked_fw_independent_ph<<<gridPhase3, dimBlockSize>>>(blockID, pitch / sizeof(int), nvertex, graphDevice);
-        HANDLE_ERROR(cudaPeekAtLastError());
+        cudaCheck(cudaPeekAtLastError());
     }
 
     // Check for any errors launching the kernel
-    HANDLE_ERROR(cudaGetLastError());
-    HANDLE_ERROR(cudaDeviceSynchronize());
+    cudaCheck(cudaGetLastError());
+    cudaCheck(cudaDeviceSynchronize());
 
-    HANDLE_ERROR(cudaMemcpy2D(graph, width, graphDevice, pitch, width, height, cudaMemcpyDeviceToHost));
-    HANDLE_ERROR(cudaFree(graphDevice));
+    cudaCheck(cudaMemcpy2D(graph, width, graphDevice, pitch, width, height, cudaMemcpyDeviceToHost));
+    cudaCheck(cudaFree(graphDevice));
 }
