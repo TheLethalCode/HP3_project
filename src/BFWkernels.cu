@@ -227,17 +227,8 @@ void _blocked_fw_independent_ph(const int blockId, size_t pitch, const int nvert
    }
 }
 
-void cudaBlockedFW(int nvertex, int *graph)
+void cudaBlockedFW(int nvertex, int *graphDevice, int pitch)
 {
-    cudaCheck(cudaSetDevice(0));
-    int *graphDevice;
-    size_t height = nvertex;
-    size_t width = height*sizeof(int);
-    size_t pitch;
-
-    cudaCheck(cudaMallocPitch(&graphDevice, &pitch, width, height));
-
-    cudaCheck(cudaMemcpy2D(graphDevice, pitch, graph, width, width, height, cudaMemcpyHostToDevice));
 
     dim3 gridPhase1(1 ,1, 1);
     dim3 gridPhase2((nvertex - 1) / BLOCK_SIZE + 1, 2 , 1);
@@ -249,21 +240,11 @@ void cudaBlockedFW(int nvertex, int *graph)
     for(int blockID = 0; blockID < numBlock; ++blockID) {
         // Start dependent phase
         _blocked_fw_dependent_ph<<<gridPhase1, dimBlockSize>>>(blockID, pitch / sizeof(int), nvertex, graphDevice);
-        cudaCheck(cudaPeekAtLastError());
 
         // Start partially dependent phase
         _blocked_fw_partial_dependent_ph<<<gridPhase2, dimBlockSize>>>(blockID, pitch / sizeof(int), nvertex, graphDevice);
-        cudaCheck(cudaPeekAtLastError());
 
         // Start independent phase
         _blocked_fw_independent_ph<<<gridPhase3, dimBlockSize>>>(blockID, pitch / sizeof(int), nvertex, graphDevice);
-        cudaCheck(cudaPeekAtLastError());
     }
-
-    // Check for any errors launching the kernel
-    cudaCheck(cudaGetLastError());
-    cudaCheck(cudaDeviceSynchronize());
-
-    cudaCheck(cudaMemcpy2D(graph, width, graphDevice, pitch, width, height, cudaMemcpyDeviceToHost));
-    cudaCheck(cudaFree(graphDevice));
 }

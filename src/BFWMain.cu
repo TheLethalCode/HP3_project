@@ -36,25 +36,29 @@ int main(int argc, char* argv[]) {
     }
 
     // Declare and Initialise Device Array
-    // int *devAdj; 
-    // allocCopy<int>(&devAdj, adj, size*size, "Adj");
-    
-    // Run Cuda Parallel
-    // dim3 blocks((size+THREADX-1)/THREADX, (size+THREADX-1)/THREADX, 1);
-    // dim3 threads(THREADX, THREADX, 1);
-    cudaEventRecord(start);
-    cudaBlockedFW(size, adj);
-    // for (int i = 0; i < size; i++) {
-    //     APSP_kernel1<<< blocks, threads >>>(devAdj, i, size);
-    // }
-    cudaEventRecord(stop);
-    // cudaCheck(cudaPeekAtLastError());
-    // if (cudaCheck(cudaMemcpy(adj, devAdj, size*size*sizeof(int), cudaMemcpyDeviceToHost))) {
-    //     std::cout << "Obtained distance in host at adj" << std::endl;
-    // }
-    std::cout << "Obtained distance in host at adj" << std::endl;
+    // cudaCheck(cudaSetDevice(0));
+    int *graphDevice;
+    size_t height = size;
+    size_t width = height*sizeof(int);
+    size_t pitch;
 
-    // Calculate Time Taken
+    cudaCheck(cudaMallocPitch(&graphDevice, &pitch, width, height));
+
+    cudaCheck(cudaMemcpy2D(graphDevice, pitch, adj, width, width, height, cudaMemcpyHostToDevice));
+
+    cudaEventRecord(start);
+    cudaBlockedFW(size, graphDevice, pitch);
+
+    cudaEventRecord(stop);
+
+    cudaCheck(cudaPeekAtLastError());
+
+    if(cudaCheck(cudaMemcpy2D(adj, width, graphDevice, pitch, width, height, cudaMemcpyDeviceToHost)))
+    {
+        std::cout << "Obtained distance in host at adj" << std::endl;
+    }
+    cudaCheck(cudaFree(graphDevice));
+
     cudaEventSynchronize(stop);
     float timeGPU = 0;
     cudaEventElapsedTime(&timeGPU, start, stop);
