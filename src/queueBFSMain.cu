@@ -56,7 +56,6 @@ int main(int argc, char* argv[]) {
     cudaEventRecord(start);
     while (queueSize) {
         queueBfs<<< blocks, NUM_THREADS >>>(level, devV, devE, devD, devP, queueSize, nextQueueSize, devCurrentQueue, devNextQueue);
-        cudaDeviceSynchronize();
         level += 1;
         queueSize = *nextQueueSize;
         *nextQueueSize = 0;

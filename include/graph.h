@@ -4,7 +4,7 @@
 #include <utility>
 #include <limits.h>
 
-const int INF = INT_MAX;
+const int INF = 1e9;
 
 struct Graph {
     int n, m;

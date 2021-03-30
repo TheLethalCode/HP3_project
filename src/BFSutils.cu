@@ -1,7 +1,7 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 #include <iostream>
-#define NUM_THREADS 16
+
 // ========================= Parallel BFS ============================= //
 
 __global__ void BFS_kernel(int N, int level, int *devV, int *devE, int *devD, int *devP, int *devFlag) {

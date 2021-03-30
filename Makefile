@@ -1,6 +1,6 @@
 CC = nvcc
 
-all: SSSP APSP1 APSP2 BFS scanBFS
+all: SSSP APSP1 APSP2 BFS scanBFS queueBFS
 
 SSSP: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/SSSPutils.cu src/SSSPMain.cu
 	${CC} $^ -o $@

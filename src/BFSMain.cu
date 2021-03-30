@@ -27,8 +27,8 @@ int main(int argc, char* argv[]) {
     Es = vecToArr(G.packE, &E);
     D = new int[N];
     P = new int[N];
-    std::fill_n(D, N, std::numeric_limits<int>::max());
-    std::fill_n(P, N, std::numeric_limits<int>::max());
+    std::fill_n(D, N, INF);
+    std::fill_n(P, N, -1);
     D[s] = level = 0; // Update source values
     flag = 1;
 
@@ -48,7 +48,6 @@ int main(int argc, char* argv[]) {
         flag = 0;
         cudaMemcpy(devFlag, &flag, sizeof(int), cudaMemcpyHostToDevice);
         BFS_kernel<<< blocks, NUM_THREADS >>>(N, level, devV, devE, devD, devP, devFlag);
-        cudaDeviceSynchronize();
         level += 1;
         cudaMemcpy(&flag, devFlag, sizeof(int), cudaMemcpyDeviceToHost);
     }
