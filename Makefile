@@ -1,8 +1,20 @@
 CC = nvcc
 
-all: SSSP APSP1 APSP2 BFS
+all: SSSP SSSP_coarsen_2 SSSP_coarsen_4 SSSP_coarsen_8 SSSP_coarsen_16 APSP1 APSP2 BFS
 
 SSSP: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/SSSPutils.cu src/SSSPMain.cu
+	${CC} $^ -o $@
+
+SSSP_coarsen_16: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/SSSPutils_coarsen_16.cu src/SSSPMain.cu
+	${CC} $^ -o $@
+
+SSSP_coarsen_8: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/SSSPutils_coarsen_8.cu src/SSSPMain.cu
+	${CC} $^ -o $@
+
+SSSP_coarsen_4: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/SSSPutils_coarsen_4.cu src/SSSPMain.cu
+	${CC} $^ -o $@
+
+SSSP_coarsen_2: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/SSSPutils_coarsen_2.cu src/SSSPMain.cu
 	${CC} $^ -o $@
 
 APSP1: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/APSPutils.cu src/APSPMain1.cu
@@ -15,4 +27,4 @@ BFS: src/core.cu src/graph.cpp src/bfsCPU.cpp src/BFSutils.cu src/BFS.cu
 	${CC} $^ -o $@
 
 clean:
-	rm -f SSSP APSP1 APSP2 BFS
+	rm -f SSSP APSP1 APSP2 BFS SSSP_coarsen_2 SSSP_coarsen_4 SSSP_coarsen_8 SSSP_coarsen_16
