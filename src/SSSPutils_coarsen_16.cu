@@ -18,7 +18,7 @@
 
 __global__ void SSSP_kernel1(int *V, int *E, int *W, bool *M, int *C, int *U, int n) {
     
-    int tid0 = (threadIdx.x/stride)*stride*coarsen_factor + (blockIdx.x * coarsen_factor) * blockDim.x;
+    int tid0 = (threadIdx.x/stride)*stride*coarsen_factor  + threadIdx.x%stride + (blockIdx.x * coarsen_factor) * blockDim.x;
     int tid1 = tid0 + stride;
     int tid2 = tid1 + stride;
     int tid3 = tid2 + stride;
@@ -182,7 +182,7 @@ __global__ void SSSP_kernel1(int *V, int *E, int *W, bool *M, int *C, int *U, in
 }
 
 __global__ void SSSP_kernel2(bool *M, int *C, int *U, bool *flag, int n) {
-    int tid0 = (threadIdx.x/stride)*stride*coarsen_factor + (blockIdx.x * coarsen_factor) * blockDim.x;
+    int tid0 = (threadIdx.x/stride)*stride*coarsen_factor  + threadIdx.x%stride + (blockIdx.x * coarsen_factor) * blockDim.x;
     int tid1 = tid0 + stride;
     int tid2 = tid1 + stride;
     int tid3 = tid2 + stride;
