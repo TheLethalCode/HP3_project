@@ -2,6 +2,7 @@
 #define GRAPH
 #include <vector>
 #include <utility>
+#include <limits.h>
 
 const int INF = INT_MAX;
 

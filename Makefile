@@ -11,13 +11,13 @@ APSP1: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/APSPutils.cu src/AP
 APSP2: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/SSSPutils.cu src/APSPMain1.cu
 	${CC} $^ -o $@
 
-BFS: src/core.cu src/graph.cpp src/bfsCPU.cpp src/BFSutils.cu src/BFS.cu
+BFS: src/core.cu src/graph.cpp src/bfsCPU.cpp src/BFSutils.cu src/BFSMain.cu
 	${CC} $^ -o $@
 
-scanBFS: src/core.cu src/graph.cpp src/bfsCPU.cpp src/BFSutils.cu src/scanBFS.cu
+scanBFS: src/core.cu src/graph.cpp src/bfsCPU.cpp src/BFSutils.cu src/scanBFSMain.cu
 	${CC} $^ -o $@
 
-queueBFS: src/core.cu src/graph.cpp src/bfsCPU.cpp src/BFSutils.cu src/queueBFS.cu
+queueBFS: src/core.cu src/graph.cpp src/bfsCPU.cpp src/BFSutils.cu src/queueBFSMain.cu
 	${CC} $^ -o $@
 
 clean:

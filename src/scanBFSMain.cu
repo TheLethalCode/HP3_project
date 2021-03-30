@@ -89,8 +89,8 @@ int main(int argc, char* argv[]) {
     cudaEventSynchronize(stop);
     float timeGPU = 0;
     cudaEventElapsedTime(&timeGPU, start, stop);
-    std::cout << "CUDA Elapsed Time (in ms): " << timeGPU << std::endl;
 
+    // Free memory
     clear<int>(devV, "devV");
     clear<int>(devE, "devE");
     clear<int>(devD, "devD");
@@ -111,7 +111,9 @@ int main(int argc, char* argv[]) {
     bfsCPU(s, G, dis, parent, visited);
     auto end = std::chrono::high_resolution_clock::now();
     float timeCPU = std::chrono::duration_cast<std::chrono::microseconds>(end - beg).count();
-    std::cout << "CPU Elapsed Time (in ms): " << timeCPU / 1000 << std::endl;
+
+    std::cout << "CUDA Elapsed Time (in ms): " << timeGPU << std::endl;
+    std::cout << "CPU  Elapsed Time (in ms): " << timeCPU / 1000 << std::endl;
 
     // ======================= Verification ==========================//
     for (int i = 0; i < N; i++) {
