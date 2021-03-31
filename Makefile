@@ -29,23 +29,23 @@ APSP1_coarsen_4: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/APSPutils
 APSP1_coarsen_8: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/APSPutils_coarsen_8.cu src/APSPMain1.cu
 	${CC} $^ -o $@
 
-APSP2: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/SSSPutils.cu src/APSPMain1.cu
+APSP2: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/SSSPutils.cu src/APSPMain2.cu
 	${CC} $^ -o $@
 
 
-APSP2_coarsen_2: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/SSSPutils_coarsen_2.cu src/APSPMain1.cu
+APSP2_coarsen_2: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/SSSPutils_coarsen_2.cu src/APSPMain2.cu
 	${CC} $^ -o $@
 
 
-APSP2_coarsen_4: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/SSSPutils_coarsen_4.cu src/APSPMain1.cu
+APSP2_coarsen_4: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/SSSPutils_coarsen_4.cu src/APSPMain2.cu
 	${CC} $^ -o $@
 
 
-APSP2_coarsen_8: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/SSSPutils_coarsen_8.cu src/APSPMain1.cu
+APSP2_coarsen_8: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/SSSPutils_coarsen_8.cu src/APSPMain2.cu
 	${CC} $^ -o $@
 
 
-APSP2_coarsen_16: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/SSSPutils_coarsen_16.cu src/APSPMain1.cu
+APSP2_coarsen_16: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/SSSPutils_coarsen_16.cu src/APSPMain2.cu
 	${CC} $^ -o $@
 
 BFS: src/core.cu src/graph.cpp src/bfsCPU.cpp src/BFSutils.cu src/BFS.cu
