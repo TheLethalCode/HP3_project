@@ -2,8 +2,9 @@
 #define GRAPH
 #include <vector>
 #include <utility>
+#include <limits.h>
 
-const int INF = 1000000007;
+const int INF = 1e9;
 
 struct Graph {
     int n, m;
