@@ -3,8 +3,33 @@
 #include <utility>
 #include <algorithm>
 #include <set>
+#include <queue>
 
-void djikstra(Graph &G, int s, int *dis) {
+void bfsCPU(int start, Graph &G, int *distance,
+                            int *parent, bool *visited) {
+    distance[start] = 0;
+    parent[start] = start;
+    visited[start] = true;
+    std::queue<int> Q;
+    Q.push(start);
+
+    while (!Q.empty()) {
+        int u = Q.front();
+        Q.pop();
+
+        for (int i = 1; i <= G.packE[G.posV[u]]; i++) {
+            int v = G.packE[G.posV[u]+i];
+            if (!visited[v]) {
+                visited[v] = true;
+                distance[v] = distance[u] + 1;
+                parent[v] = i;
+                Q.push(v);
+            }
+        }
+    }
+}
+
+void djikstraCPU(Graph &G, int s, int *dis) {
     dis[s] = 0;
     std::set < std::pair< int, int > > S;
     S.insert({0, s});
@@ -24,7 +49,7 @@ void djikstra(Graph &G, int s, int *dis) {
     }
 }
 
-void floydWarshall(int n, int **dis) {
+void floydWarshallCPU(int n, int **dis) {
     for (int k = 0; k <= n; k++) {
         for (int i = 0; i <= n; i++) {
             for (int j = 0; j <= n; j++) {

@@ -1,7 +1,7 @@
 #include "../include/core.h"
 #include "../include/graph.h"
 #include "../include/BFSutils.h"
-#include "../include/bfsCPU.h"
+#include "../include/algoCPU.h"
 #include <iostream>
 #include <chrono>
 #include <vector>

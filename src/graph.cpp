@@ -73,9 +73,9 @@ void Graph::printGraph(){
     std::cout << "----------Graph----------" << std::endl;
     std::cout << "Num Vertices: " << n << std::endl;
     std::cout << "Edges: " << std::endl;
-    for(int i=0; i<=n; i++){
+    for (int i=0; i<=n; i++){
         std::cout << "Vertex " << i <<" : ";
-        for(int j=1; j<=packE[posV[i]]; j++){
+        for (int j=1; j<=packE[posV[i]]; j++){
             std::cout << packE[posV[i]+j] << " ";
         }
         std::cout << std::endl;
