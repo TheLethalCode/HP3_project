@@ -2,7 +2,7 @@
 #define GRAPH
 #include <vector>
 #include <utility>
-#include <limits.h>
+#include <iostream>
 
 const int INF = 1e9;
 
@@ -12,7 +12,7 @@ struct Graph {
     std::vector < int > posV, packE, packW; 
     Graph (int, char* argv[]);
     void genGraph(int, int);
-    void readGraph();
+    void readGraph(std::istream&);
     void normGraph();
     void convGraph();
     void printGraph();
