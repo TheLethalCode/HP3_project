@@ -1,6 +1,8 @@
-#include <../include/APSPutils.h>
+#include "../include/APSPutils.h"
+#include "../include/graph.h"
 #include <cuda.h>
 #include <cuda_runtime.h>
+
 
 __global__ void APSP_kernel1(int *dis, int k, int n) {
     int idx = threadIdx.x + blockIdx.x * blockDim.x;
@@ -13,8 +15,8 @@ __global__ void APSP_kernel1(int *dis, int k, int n) {
 // ===================== BLOCKED FW ===================================== //
 
 
-static __global__
-void _blocked_fw_dependent_ph(const int blockId, size_t pitch, const int nvertex, int* const graph) {
+__global__
+void _blocked_fw_independent_ph(const int blockId, size_t pitch, const int nvertex, int* const graph) {
     __shared__ int cacheGraph[BLOCK_SIZE][BLOCK_SIZE];
 
     const int idx = threadIdx.x;
@@ -56,7 +58,7 @@ void _blocked_fw_dependent_ph(const int blockId, size_t pitch, const int nvertex
 }
 
 
-static __global__
+__global__
 void _blocked_fw_partial_dependent_ph(const int blockId, size_t pitch, const int nvertex, int* const graph)
 {
     if (blockIdx.x == blockId) return;
@@ -152,8 +154,8 @@ void _blocked_fw_partial_dependent_ph(const int blockId, size_t pitch, const int
 }
 
 
-static __global__
-void _blocked_fw_independent_ph(const int blockId, size_t pitch, const int nvertex, int* const graph) {
+__global__
+void _blocked_fw_double_dependent_ph(const int blockId, size_t pitch, const int nvertex, int* const graph) {
     
     if (blockIdx.x == blockId || blockIdx.y == blockId) return;
 

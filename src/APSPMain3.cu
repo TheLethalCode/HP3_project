@@ -50,13 +50,13 @@ int main(int argc, char* argv[]) {
     cudaEventRecord(start);
     for(int blockID = 0; blockID < numBlock; ++blockID) {
         // Start dependent phase
-        _blocked_fw_dependent_ph<<<gridPhase1, dimBlockSize>>>(blockID, pitch / sizeof(int), size, graphDevice);
+        _blocked_fw_independent_ph<<<gridPhase1, dimBlockSize>>>(blockID, pitch / sizeof(int), size, graphDevice);
 
         // Start partially dependent phase
         _blocked_fw_partial_dependent_ph<<<gridPhase2, dimBlockSize>>>(blockID, pitch / sizeof(int), size, graphDevice);
 
         // Start independent phase
-        _blocked_fw_independent_ph<<<gridPhase3, dimBlockSize>>>(blockID, pitch / sizeof(int), size, graphDevice);
+        _blocked_fw_double_dependent_ph<<<gridPhase3, dimBlockSize>>>(blockID, pitch / sizeof(int), size, graphDevice);
     }
     cudaEventRecord(stop);
     cudaCheck(cudaPeekAtLastError());

@@ -11,7 +11,7 @@ APSP1: src/core.cu src/graph.cpp src/algoCPU.cpp src/SSSPutils.cu src/APSPMain1.
 APSP2: src/core.cu src/graph.cpp src/algoCPU.cpp src/APSPutils.cu src/APSPMain2.cu
 	${CC} $^ -o $@
 
-APSP3: src/core.cu src/graph.cpp src/algoCPU.cpp src/ASAPutils.cu src/APSPMain3.cu
+APSP3: src/core.cu src/graph.cpp src/algoCPU.cpp src/APSPutils.cu src/APSPMain3.cu
 	${CC} $^ -o $@
 
 BFS: src/core.cu src/graph.cpp src/algoCPU.cpp src/BFSutils.cu src/BFSMain.cu
