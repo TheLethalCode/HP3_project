@@ -87,14 +87,20 @@ void Graph::convGraph() {
 }
 
 void Graph::printGraph(){
-    std::cout << "----------Graph----------" << std::endl;
-    std::cout << "Num Vertices: " << n + 1 << std::endl;
-    std::cout << "Edges: " << m << std::endl;
-    for (int i=0; i<=n; i++){
-        std::cout << "Vertex " << i <<" : ";
-        for (int j=1; j<=packE[posV[i]]; j++){
-            std::cout << packE[posV[i]+j] << " ";
+    // std::cout << "----------Graph----------" << std::endl;
+    // std::cout << "Num Vertices: " << n << std::endl;
+    // std::cout << "Edges: " << m << std::endl;
+    std::cout << n << " " << m << std::endl;
+    for (int i = 0; i <= n; i++){
+        // std::cout << "Vertex " << i <<" : ";
+        for (int j = 1; j <= packE[posV[i]]; j++){
+            int v = packE[posV[i] + j];
+            if (i < v) {
+                std::cout << i << " ";
+                std::cout << v << " ";
+                std::cout << packW[posV[i] + j] << std::endl;
+            }
         }
-        std::cout << std::endl;
+        // std::cout << std::endl;
     }
 }
