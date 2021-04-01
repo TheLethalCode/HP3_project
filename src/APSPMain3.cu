@@ -1,14 +1,11 @@
 #include "../include/core.h"
 #include "../include/graph.h"
 #include "../include/APSPutils.h"
-#include "../include/shortestPathCPU.h"
+#include "../include/algoCPU.h"
 #include <iostream>
 #include <chrono>
 #include <vector>
 #include <utility>
-#include "../include/BFWkernels.h"
-
-#define THREADX 16
 
 int main(int argc, char* argv[]) {
     cudaEvent_t start, stop;
@@ -36,29 +33,40 @@ int main(int argc, char* argv[]) {
     }
 
     // Declare and Initialise Device Array
-    // cudaCheck(cudaSetDevice(0));
     int *graphDevice;
     size_t height = size;
     size_t width = height*sizeof(int);
     size_t pitch;
 
     cudaCheck(cudaMallocPitch(&graphDevice, &pitch, width, height));
-
     cudaCheck(cudaMemcpy2D(graphDevice, pitch, adj, width, width, height, cudaMemcpyHostToDevice));
 
+    dim3 gridPhase1(1 ,1, 1);
+    dim3 gridPhase2((size - 1) / BLOCK_SIZE + 1, 2 , 1);
+    dim3 gridPhase3((size - 1) / BLOCK_SIZE + 1, (size - 1) / BLOCK_SIZE + 1 , 1);
+    dim3 dimBlockSize(BLOCK_SIZE, BLOCK_SIZE, 1);
+    int numBlock = (size - 1) / BLOCK_SIZE + 1;
+
     cudaEventRecord(start);
-    cudaBlockedFW(size, graphDevice, pitch);
+    for(int blockID = 0; blockID < numBlock; ++blockID) {
+        // Start dependent phase
+        _blocked_fw_dependent_ph<<<gridPhase1, dimBlockSize>>>(blockID, pitch / sizeof(int), size, graphDevice);
 
+        // Start partially dependent phase
+        _blocked_fw_partial_dependent_ph<<<gridPhase2, dimBlockSize>>>(blockID, pitch / sizeof(int), size, graphDevice);
+
+        // Start independent phase
+        _blocked_fw_independent_ph<<<gridPhase3, dimBlockSize>>>(blockID, pitch / sizeof(int), size, graphDevice);
+    }
     cudaEventRecord(stop);
-
     cudaCheck(cudaPeekAtLastError());
 
-    if(cudaCheck(cudaMemcpy2D(adj, width, graphDevice, pitch, width, height, cudaMemcpyDeviceToHost)))
-    {
+    if(cudaCheck(cudaMemcpy2D(adj, width, graphDevice, pitch, width, height, cudaMemcpyDeviceToHost))){
         std::cout << "Obtained distance in host at adj" << std::endl;
     }
     cudaCheck(cudaFree(graphDevice));
 
+    // Time Calculation
     cudaEventSynchronize(stop);
     float timeGPU = 0;
     cudaEventElapsedTime(&timeGPU, start, stop);
@@ -66,7 +74,7 @@ int main(int argc, char* argv[]) {
 
     // ========================= CPU ============================= //
     auto beg = std::chrono::high_resolution_clock::now();
-    floydWarshall(G.n, dis);
+    floydWarshallCPU(G.n, dis);
     auto end = std::chrono::high_resolution_clock::now();
     float timeCPU = std::chrono::duration_cast<std::chrono::microseconds>(end - beg).count();
     std::cout << "CPU Elapsed Time (in ms): " << timeCPU / 1000 << std::endl;

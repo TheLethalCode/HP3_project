@@ -1,7 +1,7 @@
 #include "../include/core.h"
 #include "../include/graph.h"
 #include "../include/SSSPutils.h"
-#include "../include/shortestPathCPU.h"
+#include "../include/algoCPU.h"
 #include <iostream>
 #include <chrono>
 #include <vector>
@@ -63,6 +63,15 @@ int main(int argc, char* argv[]) {
         std::cout << "Obtained distance in host at C_a" << std::endl;
     }
 
+    // Free memory
+    clear<int>(devV, "devV");
+    clear<int>(devE, "devE");
+    clear<int>(devW, "devW");
+    clear<int>(devC, "devC");
+    clear<int>(devU, "devU");
+    clear<bool>(devM, "devM");
+    clear<bool>(devFlag, "devFlag");
+
     // Calculate Time Taken
     cudaEventSynchronize(stop);
     float timeGPU = 0;
@@ -73,7 +82,7 @@ int main(int argc, char* argv[]) {
     int *dis = new int[Vs];
     std::fill_n(dis, Vs, INF);
     auto beg = std::chrono::high_resolution_clock::now();
-    djikstra(G, s, dis);
+    djikstraCPU(G, s, dis);
     auto end = std::chrono::high_resolution_clock::now();
     float timeCPU = std::chrono::duration_cast<std::chrono::microseconds>(end - beg).count();
     std::cout << "CPU Elapsed Time (in ms): " << timeCPU / 1000 << std::endl;

@@ -1,21 +1,27 @@
 CC = nvcc
 
-all: SSSP APSP1 APSP2 BFS
+all: SSSP APSP1 APSP2 APSP3 BFS scanBFS queueBFS
 
-SSSP: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/SSSPutils.cu src/SSSPMain.cu
+SSSP: src/core.cu src/graph.cpp src/algoCPU.cpp src/SSSPutils.cu src/SSSPMain.cu
 	${CC} $^ -o $@
 
-APSP1: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/APSPutils.cu src/APSPMain1.cu
+APSP1: src/core.cu src/graph.cpp src/algoCPU.cpp src/SSSPutils.cu src/APSPMain1.cu
 	${CC} $^ -o $@
 
-BFW: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/BFWkernels.cu src/BFWMain.cu
+APSP2: src/core.cu src/graph.cpp src/algoCPU.cpp src/APSPutils.cu src/APSPMain2.cu
 	${CC} $^ -o $@
 
-APSP2: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/SSSPutils.cu src/APSPMain1.cu
+APSP3: src/core.cu src/graph.cpp src/algoCPU.cpp src/ASAPutils.cu src/APSPMain3.cu
 	${CC} $^ -o $@
 
-BFS: src/core.cu src/graph.cpp src/bfsCPU.cpp src/BFSutils.cu src/BFS.cu
+BFS: src/core.cu src/graph.cpp src/algoCPU.cpp src/BFSutils.cu src/BFSMain.cu
+	${CC} $^ -o $@
+
+scanBFS: src/core.cu src/graph.cpp src/algoCPU.cpp src/BFSutils.cu src/scanBFSMain.cu
+	${CC} $^ -o $@
+
+queueBFS: src/core.cu src/graph.cpp src/algoCPU.cpp src/BFSutils.cu src/queueBFSMain.cu
 	${CC} $^ -o $@
 
 clean:
-	rm -f SSSP APSP1 APSP2 BFS BFW
+	rm -f SSSP APSP1 APSP2 APSP3 BFS scanBFS queueBFS

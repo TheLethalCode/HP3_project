@@ -59,8 +59,8 @@ void Graph::normGraph() {
 
 void Graph::convGraph() {
     for (int i = 0; i <= n; i++) {
-        posV.emplace_back(packE.size());
-        packE.emplace_back(E[i].size());
+        posV.emplace_back((int)packE.size());
+        packE.emplace_back((int)E[i].size());
         packW.emplace_back(0);
         for (auto it : E[i]) {
             packE.emplace_back(it.first);
@@ -73,9 +73,9 @@ void Graph::printGraph(){
     std::cout << "----------Graph----------" << std::endl;
     std::cout << "Num Vertices: " << n << std::endl;
     std::cout << "Edges: " << std::endl;
-    for(int i=0; i<=n; i++){
+    for (int i=0; i<=n; i++){
         std::cout << "Vertex " << i <<" : ";
-        for(int j=1; j<=packE[posV[i]]; j++){
+        for (int j=1; j<=packE[posV[i]]; j++){
             std::cout << packE[posV[i]+j] << " ";
         }
         std::cout << std::endl;
