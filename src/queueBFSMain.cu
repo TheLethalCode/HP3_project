@@ -84,7 +84,7 @@ int main(int argc, char* argv[]) {
     int *dis = new int[N];
     int *parent = new int[N];
     bool *visited = new bool[N];
-    std::fill_n(dis, N, INF);
+    std::fill_n(dis, N, std::numeric_limits<int>::max());
     std::fill_n(parent, N, -1);
     std::fill_n(visited, N, false);
     auto beg = std::chrono::high_resolution_clock::now();
