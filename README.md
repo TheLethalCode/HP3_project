@@ -1,7 +1,7 @@
 # HP3_project
 High Perfomance Parallel Programming's End Term Project - Accelerating Graph Algorithms on GPU
 
-Secondary Branch:- This branch does not have large graphs as a part of the datsets. Switch to primary branch for that.
+Note:- The repository does not have large graphs as a part of the datsets. Download and process it to the required format.
 
 ## Algorithms Overview
 - Breadth First Search (BFS)
@@ -45,6 +45,11 @@ If the input is either manual or through a file, it should follow the following 
 
 - First Line:- `<num_vertex> <num_edge>` (The number of vertices and edges respectively)
 - Next *num_edge* lines:- `<end1> <end2> <weight>` (The two endpoints of the edge and its weight)
+- The source vertex, if required, has to be inputted manually
+
+NOTE:- *end1* and *end2* should lie in [0, n]
+
+NOTE:- If the input graphs are large, it might be necessary to increase the default stack size to effectively test the algorithms. To do so temporarily, use the command `ulimit -s unlimited`.
 
 ## Datasets
 
@@ -76,7 +81,46 @@ We have two classes of graph, one for APSP, and the other for BFS and SSSP, as t
   - Edges: 837,083
   - Avg. Degree: 223
   - Source: Randomly generated using mt19937 random engine
+
+### BFS & SSSP Graphs
+
+The following graphs are all fully connected making it suitable for the proper testing of BFS and SSSP algorithms. The source vertex chosen for testing is also mentioned against their corresponding graphs.
+
+- Graph 1 (Random)
+  - Vertices: 2,701
+  - Edges: 1,808,853
+  - Avg. Degree: 1,340
+  - Source Vertex: 24
+  - Source: Randomly generated using mt19937 random engine
   
+- Graph 2 (Biological Human Gene) (Gzipped)
+  - Vertices: 21,853
+  - Edges: 12,323,648
+  - Avg. Degree: 1,128
+  - Source Vertex: 13,326
+  - Source: [Network Repo](http://networkrepository.com/bio-human-gene1.php)
+  
+- Graph 3 (Slashdot Social Network Circle)
+  - Vertices: 82,168
+  - Edges: 504,230
+  - Avg. Degree: 12
+  - Source Vertex: 33,381
+  - Source: [SNAP](https://snap.stanford.edu/data/soc-Slashdot0902.html)
+  
+- Graph 4 (Internet Topology Graph) (Gzipped)
+  - Vertices: 1,694,616
+  - Edges: 11,094,209
+  - Avg. Degree: 13
+  - Source Vertex: 811,641
+  - Source: [SNAP](https://snap.stanford.edu/data/as-Skitter.html)
+  
+- Graph 5 (Random Geometric Graphs) (Not present due to large size)
+  - Vertices: 16,777,214
+  - Edges: 132,557,200
+  - Avg. Degree: 16
+  - Source Vertex: 4,271,950
+  - Source: [Network Repo](http://networkrepository.com/rgg-n-2-24-s0.php)
+
 ## Executing Commands
   - To generate all executables: `make all` (or) `make`
   - To generate a particular executable: `make <exec>` 
