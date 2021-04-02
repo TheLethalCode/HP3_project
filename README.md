@@ -1,6 +1,8 @@
 # HP3_project
 High Perfomance Parallel Programming's End Term Project - Accelerating Graph Algorithms on GPU
 
+Secondary Branch:- This branch does not have large graphs as a part of the datsets. Switch to primary branch for that.
+
 ## Algorithms Overview
 - Breadth First Search (BFS)
   - Simple BFS (Executable: BFS)
