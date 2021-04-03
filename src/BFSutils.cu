@@ -78,7 +78,6 @@ __global__ void countDegrees(int *devV, int *devE, int *devP, int queueSize, int
 }
 
 __global__ void scanDegrees(int N, int *devDegrees, int *incrDegrees) {
-    //TODO: copied this part, need to understand
     int thid = blockIdx.x * blockDim.x + threadIdx.x; 
     
     if (thid < N) {
@@ -126,7 +125,6 @@ __global__ void scanDegrees(int N, int *devDegrees, int *incrDegrees) {
 __global__ void assignVerticesNextQueue(int *devV, int *devE, int *devP, int queueSize,
                              int *devCurrentQueue, int *devNextQueue, int *devDegrees, int *incrDegrees,
                              int nextQueueSize) {
-    //TODO: copied this part, need to understand
     int thid = blockIdx.x * blockDim.x + threadIdx.x;
     // printf("assignVerticesNextQ thid %d\n", thid);
     if (thid < queueSize) {
