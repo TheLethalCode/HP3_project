@@ -84,7 +84,7 @@ We have two classes of graph, one for APSP, and the other for BFS and SSSP, as t
 
 ### BFS & SSSP Graphs
 
-The following graphs are all fully connected making it suitable for the proper testing of BFS and SSSP algorithms. The source vertex chosen for testing is also mentioned against their corresponding graphs.
+The source vertex chosen for testing is also mentioned against their corresponding graphs, which is present in the largest connected component.
 
 - Graph 1 (Random)
   - Vertices: 2,701
