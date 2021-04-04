@@ -5,16 +5,16 @@ all: SSSP SSSP_coarsen_2 SSSP_coarsen_4 SSSP_coarsen_8 SSSP_coarsen_16 APSP1 APS
 SSSP: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/SSSPutils.cu src/SSSPMain.cu
 	${CC} $^ -o $@
 
-SSSP_coarsen_16: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/SSSPutils_coarsen_16.cu src/SSSPMain.cu
+SSSP_coarsen_16: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/SSSPutils_coarsen_16.cu src/SSSPMain_coarsen_16.cu
 	${CC} $^ -o $@
 
-SSSP_coarsen_8: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/SSSPutils_coarsen_8.cu src/SSSPMain.cu
+SSSP_coarsen_8: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/SSSPutils_coarsen_8.cu src/SSSPMain_coarsen_8.cu
 	${CC} $^ -o $@
 
-SSSP_coarsen_4: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/SSSPutils_coarsen_4.cu src/SSSPMain.cu
+SSSP_coarsen_4: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/SSSPutils_coarsen_4.cu src/SSSPMain_coarsen_4.cu
 	${CC} $^ -o $@
 
-SSSP_coarsen_2: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/SSSPutils_coarsen_2.cu src/SSSPMain.cu
+SSSP_coarsen_2: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/SSSPutils_coarsen_2.cu src/SSSPMain_coarsen_2.cu
 	${CC} $^ -o $@
 
 APSP1: src/core.cu src/graph.cpp src/shortestPathCPU.cpp src/APSPutils.cu src/APSPMain1.cu
