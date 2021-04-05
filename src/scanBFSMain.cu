@@ -57,11 +57,11 @@ int main(int argc, char* argv[]) {
     while (queueSize) {
         int blocks = queueSize/NUM_THREADS + 1;
         nextLayer<<< blocks, NUM_THREADS >>>(level, devV, devE, devP, devD, queueSize, devCurrentQueue);
-        // cudaDeviceSynchronize();
+        cudaDeviceSynchronize();
         countDegrees<<< blocks, NUM_THREADS >>>(devV, devE, devP, queueSize, devCurrentQueue, devDegrees);
-        // cudaDeviceSynchronize();
+        cudaDeviceSynchronize();
         scanDegrees<<< blocks, NUM_THREADS >>>(queueSize, devDegrees, devIncrDegrees);
-        // cudaDeviceSynchronize();
+        cudaDeviceSynchronize();
         cudaMemcpy(incrDegrees, devIncrDegrees, sizeof(int)*N, cudaMemcpyDeviceToHost);
 
         //count prefix sums on CPU for ends of blocks exclusive already written previous block sum
@@ -74,7 +74,7 @@ int main(int argc, char* argv[]) {
         cudaMemcpy(devIncrDegrees, incrDegrees, sizeof(int)*N, cudaMemcpyHostToDevice);
         assignVerticesNextQueue<<< blocks, NUM_THREADS >>>(devV, devE, devP, queueSize, devCurrentQueue, devNextQueue,
             devDegrees, devIncrDegrees, nextQueueSize);
-        // cudaDeviceSynchronize();
+        cudaDeviceSynchronize();
         level += 1;
         queueSize = nextQueueSize;
         std::swap(devCurrentQueue, devNextQueue);

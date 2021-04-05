@@ -1,6 +1,7 @@
 #include <cuda.h>
 #include <cuda_runtime.h>
 #include <iostream>
+#include "../include/graph.h"
 
 // ========================= Parallel BFS ============================= //
 
@@ -33,8 +34,8 @@ __global__ void queueBfs(int level, int *devV, int *devE, int *devD, int *devP,
         int u = devCurrentQueue[thid];
         for (int i = 1; i <= devE[devV[u]]; i++) {
             int v = devE[devV[u]+i];
-            if (devD[v] == INT_MAX && atomicMin(&devD[v], level + 1) == INT_MAX) {
-                devP[v] = devV[u]+i;
+            if (devD[v] == INF && atomicMin(&devD[v], level + 1) == INF) {
+                devP[v] = u;
                 int position = atomicAdd(nextQueueSize, 1);
                 devNextQueue[position] = v;
             }

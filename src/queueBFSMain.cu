@@ -30,8 +30,8 @@ int main(int argc, char* argv[]) {
     Es = vecToArr(G.packE, &E);
     D = new int[N];
     P = new int[N];
-    std::fill_n(D, N, std::numeric_limits<int>::max());
-    std::fill_n(P, N, std::numeric_limits<int>::max());
+    std::fill_n(D, N, INF);
+    std::fill_n(P, N, -1);
     D[s] = level = 0; // Update source values
     queueSize = 1;
 
@@ -56,6 +56,7 @@ int main(int argc, char* argv[]) {
     cudaEventRecord(start);
     while (queueSize) {
         queueBfs<<< blocks, NUM_THREADS >>>(level, devV, devE, devD, devP, queueSize, nextQueueSize, devCurrentQueue, devNextQueue);
+        cudaDeviceSynchronize();
         level += 1;
         queueSize = *nextQueueSize;
         *nextQueueSize = 0;
@@ -84,7 +85,7 @@ int main(int argc, char* argv[]) {
     int *dis = new int[N];
     int *parent = new int[N];
     bool *visited = new bool[N];
-    std::fill_n(dis, N, std::numeric_limits<int>::max());
+    std::fill_n(dis, N, INF);
     std::fill_n(parent, N, -1);
     std::fill_n(visited, N, false);
     auto beg = std::chrono::high_resolution_clock::now();
